@@ -45,8 +45,8 @@
       "time": "10:00",
       "location": "Room 101",
       "type": "Workshop",
-      "capacity": 30,
-      "createdBy": 1
+      "capacity": 35,
+      "createdBy": "1"
     },
     {
       "id": "e2",
@@ -160,7 +160,7 @@
       "userId": "2",
       "eventId": "f83b",
       "status": "Registered",
-      "attendance": "Attended",
+      "attendance": "Completed",
       "registrationDate": "2025-08-01T10:00:00.000Z"
     },
     {

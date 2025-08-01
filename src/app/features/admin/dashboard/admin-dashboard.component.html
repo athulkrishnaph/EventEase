@@ -129,11 +129,11 @@
           </div>
 
           <!-- Pagination Controls -->
-          <div class="pagination-container mt-4" *ngIf="totalItems > 0">
-            <div class="d-flex justify-content-center align-items-center">
-              <div class="pagination-info me-4">
+          <div class="pagination-container" *ngIf="totalItems > 0">
+            <div class="d-flex justify-content-center align-items-center flex-column gap-3">
+              <div class="pagination-info">
                 <span class="text-muted me-2">Show:</span>
-                <select class="form-select form-select-sm me-3" style="width: auto;" (change)="onPageSizeChange($any($event))">
+                <select class="form-select form-select-sm me-3" (change)="onPageSizeChange($any($event))">
                   <option value="5" [selected]="pageSize === 5">5</option>
                   <option value="10" [selected]="pageSize === 10">10</option>
                   <option value="20" [selected]="pageSize === 20">20</option>
