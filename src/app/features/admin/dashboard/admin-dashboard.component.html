@@ -1,0 +1,175 @@
+<div class="container-fluid mt-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h2 class="card-title">Admin Dashboard</h2>
+              <p class="card-text">Manage events and monitor user participation.</p>
+            </div>
+            <button class="btn btn-outline-danger" (click)="logout()">
+              <i class="bi bi-box-arrow-right"></i> Logout
+            </button>
+          </div>
+          <!-- Replace the Create New Event button -->
+          <div class="d-flex gap-2 mt-3">
+            <a routerLink="/admin/events" class="btn btn-primary">Manage Events</a>
+            <a routerLink="/admin/events/create" class="btn btn-success">Create New Event</a>
+            <!-- Removed the Manage Users button -->
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="row mb-4">
+    <!-- User Statistics Chart -->
+    <div class="col-md-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title">User Event Statistics</h5>
+          <div class="chart-container" #userStatsChart></div>
+          <div class="mt-3 text-center">
+            <!-- Filter buttons removed, now handled by chart click -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Event Participation Chart -->
+    <div class="col-md-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title">Event-wise Participation</h5>
+          <div class="chart-wrapper">
+            <div class="chart-container" #eventParticipationChart></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Participations Table -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="card-title mb-0">User Participations</h5>
+            <div class="d-flex gap-2 align-items-center">
+              <button class="btn btn-sm btn-outline-secondary" (click)="filterParticipations('all')">Show All</button>
+              <span class="badge bg-info">Filter: {{ selectedFilter }}</span>
+              <div class="input-group" style="width: 250px;">
+                <input 
+                  type="text" 
+                  class="form-control form-control-sm" 
+                  placeholder="Search by event name" 
+                  [(ngModel)]="searchTerm"
+                  (keyup.enter)="searchParticipations()"
+                >
+                <button class="btn btn-sm btn-outline-secondary" (click)="searchParticipations()">
+                  Search
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Event</th>
+                  <th>Type</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Registration Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (participation of paginatedParticipations; track participation.id) {
+                  <tr>
+                    <td>{{ getUser(participation.userId)?.name || 'Unknown User' }}</td>
+                    <td>{{ getEvent(participation.eventId)?.title || 'Unknown Event' }}</td>
+                    <td>
+                      <span class="badge" [ngClass]="{
+                        'bg-primary': getEvent(participation.eventId)?.type === 'Webinar',
+                        'bg-success': getEvent(participation.eventId)?.type === 'Workshop',
+                        'bg-warning': getEvent(participation.eventId)?.type === 'Meetup'
+                      }">{{ getEvent(participation.eventId)?.type || 'Unknown' }}</span>
+                    </td>
+                    <td>{{ getEvent(participation.eventId)?.date ? (getEvent(participation.eventId)?.date | date:'dd MMM yyyy':'en-US') : 'N/A' }}</td>
+                    <td>
+                      <span class="badge" 
+                            [ngClass]="{
+                              'bg-warning': participation.status === 'Assigned',
+                              'bg-info': participation.status === 'Pending',
+                              'bg-primary': participation.status === 'Registered',
+                              'bg-success': participation.attendance === 'Attended',
+                              'bg-dark': participation.attendance === 'Completed'
+                            }">
+                        {{ participation.status }}
+                        <span *ngIf="participation.attendance"> - {{ participation.attendance }}</span>
+                      </span>
+                    </td>
+                    <td>{{ participation.registrationDate | date:'dd MMM yyyy':'en-US' }}</td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td [attr.colspan]="6" class="text-center py-3">
+                      No participations found matching the selected filter.
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination Controls -->
+          <div class="pagination-container mt-4" *ngIf="totalItems > 0">
+            <div class="d-flex justify-content-center align-items-center">
+              <div class="pagination-info me-4">
+                <span class="text-muted me-2">Show:</span>
+                <select class="form-select form-select-sm me-3" style="width: auto;" (change)="onPageSizeChange($any($event))">
+                  <option value="5" [selected]="pageSize === 5">5</option>
+                  <option value="10" [selected]="pageSize === 10">10</option>
+                  <option value="20" [selected]="pageSize === 20">20</option>
+                  <option value="50" [selected]="pageSize === 50">50</option>
+                </select>
+                <span class="text-muted">
+                  Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ Math.min(currentPage * pageSize, totalItems) }} of {{ totalItems }} participations
+                </span>
+              </div>
+
+              <nav aria-label="Participations pagination">
+                <ul class="pagination pagination-sm mb-0">
+                  <!-- Previous button -->
+                  <li class="page-item" [class.disabled]="currentPage === 1">
+                    <button class="page-link" (click)="previousPage()" [disabled]="currentPage === 1">
+                      <i class="bi bi-chevron-left"></i> Previous
+                    </button>
+                  </li>
+
+                  <!-- Page numbers -->
+                  <li class="page-item" *ngFor="let page of getPageNumbers()" [class.active]="page === currentPage">
+                    <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
+                  </li>
+
+                  <!-- Next button -->
+                  <li class="page-item" [class.disabled]="currentPage === totalPages">
+                    <button class="page-link" (click)="nextPage()" [disabled]="currentPage === totalPages">
+                      Next <i class="bi bi-chevron-right"></i>
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

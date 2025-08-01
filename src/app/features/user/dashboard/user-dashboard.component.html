@@ -1,0 +1,408 @@
+<div class="container-fluid mt-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h2 class="card-title">Welcome, {{ currentUser?.name }}</h2>
+              <p class="card-text">Here's your event dashboard. Track your events and participation.</p>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline-primary" (click)="openExportModal()">
+                <i class="bi bi-download"></i> Export CSV
+              </button>
+              <button class="btn btn-outline-danger" (click)="logout()">
+                <i class="bi bi-box-arrow-right"></i> Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="row mb-4">
+    <!-- Total Events Distribution -->
+    <div class="col-md-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Events Distribution</h5>
+          <div class="chart-wrapper">
+            <div class="chart-container" #eventsDistributionChart></div>
+          </div>
+          <!-- Removed buttons -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Your Events Overview -->
+    <div class="col-md-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Your Events Overview</h5>
+          <div class="chart-container" #eventsOverviewChart></div>
+          <!-- Removed buttons -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Attendance Summary -->
+    <div class="col-md-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Attendance Summary</h5>
+          <div class="chart-container" #attendanceSummaryChart></div>
+          <!-- Removed buttons -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Events Table -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="card-title mb-0">Events</h5>
+            <div>
+              <button class="btn btn-sm btn-outline-secondary" (click)="filterEvents('all')">Show All</button>
+              <span class="ms-2 badge bg-info">Filter: {{ selectedFilter }}</span>
+            </div>
+          </div>
+          
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Type</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Location</th>
+                  <th>Register</th>
+                  <th>Status</th>
+                  <th>Attendance</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (event of filteredEvents; track event.id) {
+                  @if (getEvent(event.id)) {
+                    <tr>
+                      <td>
+                        <span class="event-title-link" (click)="openEventModal(event)">{{ event.title }}</span>
+                      </td>
+                      <td><span class="badge" [ngClass]="{
+                        'bg-primary': event.type === 'Webinar',
+                        'bg-success': event.type === 'Workshop',
+                        'bg-warning': event.type === 'Meetup'
+                      }">{{ event.type }}</span></td>
+                      <td>{{ event.date | date:'dd MMM yyyy':'en-US' }}</td>
+                      <td>{{ event.time }}</td>
+                      <td>{{ event.location }}</td>
+                      <td>
+                        @if (!getParticipation(event.id)) {
+                          <button class="btn btn-sm btn-primary" (click)="registerForEvent(event.id)">
+                            Register
+                          </button>
+                        } @else {
+                          <span class="badge bg-success">Registered</span>
+                        }
+                      </td>
+                      <td>
+                        @if (getParticipation(event.id)) {
+                          <select class="form-select form-select-sm w-auto d-inline" 
+                                  [value]="getParticipation(event.id)?.status || ''"
+                                  (change)="updateParticipationStatus(getParticipation(event.id)!.id, $any($event.target).value, event.id)">
+                            <option value="Assigned">Assigned</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Registered">Registered</option>
+                          </select>
+                        } @else {
+                          <span class="badge bg-light text-dark">-</span>
+                        }
+                      </td>
+                      <td>
+                        @if (getParticipation(event.id) && getParticipation(event.id)?.status === 'Registered') {
+                          <select class="form-select form-select-sm w-auto d-inline" 
+                                  [value]="getParticipation(event.id)?.attendance || ''"
+                                  (change)="updateAttendanceStatus(getParticipation(event.id)!.id, $any($event.target).value, event.id)">
+                            <option value="Attended">Attended</option>
+                            <option value="Completed">Completed</option>
+                          </select>
+                        } @else {
+                          <span class="badge bg-light text-dark">-</span>
+                        }
+                      </td>
+                    </tr>
+                  }
+                } @empty {
+                  <tr>
+                    <td colspan="8" class="text-center py-3">
+                      No events available.
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Event Details Modal -->
+          <div *ngIf="showEventModal" class="custom-modal-anchored">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content modern-modal">
+                <div class="modal-header modern-header">
+                  <h5 class="modal-title">Event Details</h5>
+                  <button type="button" class="btn-close modern-close" (click)="closeEventModal()"></button>
+                </div>
+                <div class="modal-body modern-body">
+                  <div *ngIf="selectedEvent && getEvent(selectedEvent.id); else noEventDetails" class="event-details">
+                    <h6 class="event-title">{{ selectedEvent.title }}</h6>
+                    <div class="detail-item">
+                      <span class="detail-label">Type:</span>
+                      <span class="detail-value">{{ selectedEvent.type }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">Date:</span>
+                      <span class="detail-value">{{ selectedEvent.date }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">Time:</span>
+                      <span class="detail-value">{{ selectedEvent.time }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">Location:</span>
+                      <span class="detail-value">{{ selectedEvent.location }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">Description:</span>
+                      <span class="detail-value">{{ selectedEvent.description }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <span class="detail-label">Capacity:</span>
+                      <span class="detail-value">{{ selectedEvent.capacity }}</span>
+                    </div>
+                  </div>
+                  <ng-template #noEventDetails>
+                    <div class="text-center text-danger">Event details not available (event may have been deleted).</div>
+                  </ng-template>
+                </div>
+                <div class="modal-footer modern-footer">
+                  <button type="button" class="btn btn-secondary modern-btn" (click)="closeEventModal()">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <style>
+            .custom-modal-anchored {
+  position: fixed; /* Changed from absolute to fixed */
+  left: 50%;
+  top: 10%; /* Changed from 30px to 50% */
+  transform: translate(-50%, -50%); /* Added vertical centering */
+  z-index: 2000;
+  width: fit-content;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  border: 1px solid black;
+}
+            .custom-modal-anchored .modal-dialog {
+              pointer-events: all;
+              margin: 0;
+              max-width: 420px;
+              width: 95vw;
+              min-width: 320px;
+              box-sizing: border-box;
+            }
+            .modern-modal {
+              border-radius: 12px;
+              border: none;
+              background: #fff;
+              max-height: none;
+              box-shadow: none;
+            }
+            .modern-header {
+              background: #f8f9fa;
+              border-bottom: 1px solid #e9ecef;
+              padding: 20px 24px 16px;
+            }
+            .modern-header .modal-title {
+              font-size: 18px;
+              font-weight: 600;
+              color: #333;
+              margin: 0;
+            }
+            .modern-close {
+              background: none;
+              border: none;
+              font-size: 20px;
+              color: #666;
+              opacity: 0.7;
+              transition: opacity 0.2s;
+            }
+            .modern-close:hover {
+              opacity: 1;
+            }
+            .modern-body {
+              padding: 24px;
+              background: white;
+              overflow: visible;
+              max-height: none;
+            }
+            .event-details {
+              color: #333;
+            }
+            .event-title {
+              font-size: 20px;
+              font-weight: 600;
+              color: #2c3e50;
+              margin-bottom: 20px;
+              padding-bottom: 12px;
+              border-bottom: 2px solid #3498db;
+            }
+            .detail-item {
+              display: flex;
+              margin-bottom: 16px;
+              align-items: flex-start;
+            }
+            .detail-label {
+              font-weight: 600;
+              color: #555;
+              min-width: 100px;
+              margin-right: 12px;
+            }
+            .detail-value {
+              color: #333;
+              flex: 1;
+              line-height: 1.5;
+            }
+            .modern-footer {
+              background: #f8f9fa;
+              border-top: 1px solid #e9ecef;
+              padding: 16px 24px 20px;
+              justify-content: flex-end;
+            }
+            .modern-btn {
+              background: #3498db;
+              border: none;
+              color: white;
+              padding: 10px 24px;
+              border-radius: 6px;
+              font-weight: 500;
+              transition: background-color 0.2s;
+            }
+            .modern-btn:hover {
+              background: #2980b9;
+            }
+            .event-title-link {
+              color: #0d6efd;
+              font-weight: 500;
+              cursor: pointer;
+              text-decoration: none;
+              transition: color 0.2s;
+            }
+            .event-title-link:hover {
+              color: #0056b3;
+              text-decoration: none;
+            }
+          </style>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Modal -->
+  <div class="modal fade" [class.show]="showExportModal" [style.display]="showExportModal ? 'block' : 'none'" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="bi bi-download"></i> Export Event Data
+          </h5>
+          <button type="button" class="btn-close" (click)="closeExportModal()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <h6>Export Options</h6>
+              <div class="mb-3">
+                <label class="form-label">Export Type</label>
+                <select class="form-select" [(ngModel)]="exportType">
+                  <option value="all">All Events</option>
+                  <option value="status">By Status</option>
+                  <option value="attendance">By Attendance</option>
+                  <option value="dateRange">By Date Range</option>
+                </select>
+              </div>
+
+              <!-- Status Filter -->
+              <div class="mb-3" *ngIf="exportType === 'status'">
+                <label class="form-label">Status Filter</label>
+                <select class="form-select" [(ngModel)]="exportStatus">
+                  <option value="">Select Status</option>
+                  <option value="Registered">Registered</option>
+                  <option value="Assigned">Assigned</option>
+                  <option value="Pending">Pending</option>
+                </select>
+              </div>
+
+              <!-- Attendance Filter -->
+              <div class="mb-3" *ngIf="exportType === 'attendance'">
+                <label class="form-label">Attendance Filter</label>
+                <select class="form-select" [(ngModel)]="exportAttendance">
+                  <option value="">Select Attendance</option>
+                  <option value="Attended">Attended</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
+
+              <!-- Date Range Filter -->
+              <div class="mb-3" *ngIf="exportType === 'dateRange'">
+                <label class="form-label">Start Date</label>
+                <input type="date" class="form-control" [(ngModel)]="exportStartDate">
+              </div>
+              <div class="mb-3" *ngIf="exportType === 'dateRange'">
+                <label class="form-label">End Date</label>
+                <input type="date" class="form-control" [(ngModel)]="exportEndDate">
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <h6>Export Statistics</h6>
+              <div class="card">
+                <div class="card-body">
+                  <p><strong>Total Events:</strong> {{ getExportStats()?.total || 0 }}</p>
+                  <p><strong>By Status:</strong></p>
+                  <ul class="list-unstyled">
+                    <li *ngFor="let status of getExportStats()?.byStatus | keyvalue">
+                      {{ status.key }}: {{ status.value }}
+                    </li>
+                  </ul>
+                  <p><strong>By Attendance:</strong></p>
+                  <ul class="list-unstyled">
+                    <li *ngFor="let attendance of getExportStats()?.byAttendance | keyvalue">
+                      {{ attendance.key }}: {{ attendance.value }}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeExportModal()">Cancel</button>
+          <button type="button" class="btn btn-primary" (click)="exportData()" [disabled]="isExporting">
+            <span *ngIf="isExporting" class="spinner-border spinner-border-sm me-2"></span>
+            {{ isExporting ? 'Exporting...' : 'Export CSV' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Backdrop -->
+  <div class="modal-backdrop fade show" *ngIf="showExportModal"></div>
+</div>

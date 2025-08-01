@@ -1,0 +1,60 @@
+/* Styles for AdminEventsComponent */
+
+// Add your custom styles here 
+
+// Pagination Styles
+.pagination {
+  .page-link {
+    color: #3498db;
+    border-color: #dee2e6;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: #e3f2fd;
+      border-color: #3498db;
+      color: #2980b9;
+    }
+    
+    &:focus {
+      box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+  }
+  
+  .page-item.active .page-link {
+    background-color: #3498db;
+    border-color: #3498db;
+    color: white;
+  }
+  
+  .page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: #fff;
+    border-color: #dee2e6;
+  }
+}
+
+// Page size selector styles
+.form-select-sm {
+  min-width: 80px;
+}
+
+// Pagination info styles
+.text-muted {
+  font-size: 0.875rem;
+}
+
+// Responsive pagination
+@media (max-width: 768px) {
+  .d-flex.justify-content-between {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .pagination {
+    justify-content: center;
+  }
+  
+  .form-select-sm {
+    min-width: 60px;
+  }
+} 

@@ -1,0 +1,229 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "email": "admin@example.com",
+      "password": "admin123",
+      "name": "Admin User",
+      "role": "admin"
+    },
+    {
+      "id": "2",
+      "email": "user@example.com",
+      "password": "user123",
+      "name": "Regular User",
+      "role": "user"
+    },
+    {
+      "id": "3",
+      "email": "john@example.com",
+      "password": "john123",
+      "name": "John Doe",
+      "role": "user"
+    },
+    {
+      "id": "4",
+      "email": "jane@example.com",
+      "password": "jane123",
+      "name": "Jane Smith",
+      "role": "user"
+    },
+    {
+      "id": "5",
+      "email": "manager@example.com",
+      "password": "manager123",
+      "name": "Event Manager",
+      "role": "admin"
+    }
+  ],
+  "events": [
+    {
+      "id": "e1",
+      "title": "Angular Bootcamp",
+      "description": "A hands-on workshop for Angular beginners.",
+      "date": "2025-09-01",
+      "time": "10:00",
+      "location": "Room 101",
+      "type": "Workshop",
+      "capacity": 30,
+      "createdBy": 1
+    },
+    {
+      "id": "e2",
+      "title": "Web Development Webinar",
+      "description": "Latest trends in web development.",
+      "date": "2025-09-10",
+      "time": "15:00",
+      "location": "Online",
+      "type": "Webinar",
+      "capacity": 100,
+      "createdBy": 1
+    },
+    {
+      "id": "e3",
+      "title": "Tech Meetup",
+      "description": "Networking event for tech professionals.",
+      "date": "2025-09-20",
+      "time": "18:00",
+      "location": "Main Hall",
+      "type": "Meetup",
+      "capacity": 50,
+      "createdBy": "1"
+    },
+    {
+      "id": "f83b",
+      "title": "React.js Fundamentals",
+      "description": "An introductory workshop covering the core concepts of React.js for web development.",
+      "date": "2025-08-14",
+      "time": "02:14",
+      "location": "Online",
+      "type": "Workshop",
+      "capacity": 50,
+      "createdBy": "1"
+    }
+  ],
+  "participations": [
+    {
+      "id": "4",
+      "userId": "2",
+      "eventId": "e1",
+      "status": "Registered",
+      "attendance": "Attended",
+      "registrationDate": "2025-07-27T13:10:00.000Z"
+    },
+    {
+      "id": "1753646675872",
+      "userId": "2",
+      "eventId": "e2",
+      "status": "Assigned",
+      "attendance": null,
+      "registrationDate": "2025-07-27T20:04:35.872Z"
+    },
+    {
+      "id": "1753646703257",
+      "userId": "2",
+      "eventId": "e3",
+      "status": "Pending",
+      "attendance": null,
+      "registrationDate": "2025-07-27T20:05:03.257Z"
+    },
+    {
+      "id": "3d5d",
+      "userId": "3",
+      "eventId": "e1",
+      "status": "Pending",
+      "attendance": null,
+      "registrationDate": "2025-07-28T12:07:14.286Z"
+    },
+    {
+      "id": "0c68",
+      "userId": "4",
+      "eventId": "e1",
+      "status": "Registered",
+      "attendance": "Completed",
+      "registrationDate": "2025-07-28T17:59:02.145Z"
+    },
+    {
+      "id": "4141",
+      "userId": "4",
+      "eventId": "e2",
+      "status": "Assigned",
+      "attendance": null,
+      "registrationDate": "2025-07-28T17:59:09.193Z"
+    },
+    {
+      "id": "4f1a",
+      "userId": "4",
+      "eventId": "e3",
+      "status": "Pending",
+      "attendance": null,
+      "registrationDate": "2025-07-28T17:59:11.256Z"
+    },
+    {
+      "id": "e769",
+      "userId": "3",
+      "eventId": "e2",
+      "status": "Registered",
+      "attendance": "Attended",
+      "registrationDate": "2025-07-31T11:11:20.873Z"
+    },
+    {
+      "id": "8a7e",
+      "userId": "3",
+      "eventId": "e3",
+      "status": "Registered",
+      "attendance": "Completed",
+      "registrationDate": "2025-07-31T11:11:45.714Z"
+    },
+    {
+      "id": "test1",
+      "userId": "2",
+      "eventId": "f83b",
+      "status": "Registered",
+      "attendance": "Attended",
+      "registrationDate": "2025-08-01T10:00:00.000Z"
+    },
+    {
+      "id": "test2",
+      "userId": "3",
+      "eventId": "f83b",
+      "status": "Assigned",
+      "attendance": null,
+      "registrationDate": "2025-08-01T11:00:00.000Z"
+    },
+    {
+      "id": "test3",
+      "userId": "4",
+      "eventId": "f83b",
+      "status": "Pending",
+      "attendance": null,
+      "registrationDate": "2025-08-01T12:00:00.000Z"
+    }
+  ],
+  "userRegistrations": [
+    {
+      "userId": "2",
+      "userName": "Regular User",
+      "userEmail": "user@example.com",
+      "registeredEvents": [
+        {
+          "eventId": "e1",
+          "eventTitle": "Angular Bootcamp",
+          "status": "Assigned",
+          "registrationDate": "2025-07-27T13:10:00.000Z"
+        },
+        {
+          "eventId": "e2",
+          "eventTitle": "Web Development Webinar",
+          "status": "Pending",
+          "registrationDate": "2025-07-27T20:04:35.872Z"
+        },
+        {
+          "eventId": "e3",
+          "eventTitle": "Tech Meetup",
+          "status": "Registered",
+          "attendance": "Completed",
+          "registrationDate": "2025-07-27T20:05:03.257Z"
+        }
+      ],
+      "totalRegistrations": 3,
+      "id": "e8cb"
+    },
+    {
+      "userId": "3",
+      "userName": "John Doe",
+      "userEmail": "john@example.com",
+      "registeredEvents": [],
+      "totalRegistrations": 0,
+      "id": "a2e4"
+    },
+    {
+      "userId": "4",
+      "userName": "Jane Smith",
+      "userEmail": "jane@example.com",
+      "registeredEvents": [],
+      "totalRegistrations": 0,
+      "id": "afc0"
+    }
+  ]
+}

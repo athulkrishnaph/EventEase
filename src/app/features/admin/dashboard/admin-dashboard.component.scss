@@ -1,0 +1,257 @@
+.chart-container {
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chart-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.card {
+  border-radius: 10px;
+  transition: transform 0.3s;
+  
+  &:hover {
+    transform: translateY(-5px);
+  }
+}
+
+.card-title {
+  color: #333;
+  font-weight: 600;
+}
+
+.table {
+  th {
+    font-weight: 600;
+    color: #555;
+  }
+  
+  td {
+    vertical-align: middle;
+  }
+}
+
+// Pagination Styles
+.pagination-container {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #dee2e6;
+}
+
+.pagination-info {
+  display: flex;
+  align-items: center;
+  background: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  
+  .text-muted {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6c757d;
+  }
+}
+
+.pagination {
+  margin: 0;
+  
+  .page-link {
+    color: #3498db;
+    border-color: #dee2e6;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    padding: 8px 12px;
+    margin: 0 2px;
+    border-radius: 6px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    &:hover {
+      background-color: #e3f2fd;
+      border-color: #3498db;
+      color: #2980b9;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+    }
+    
+    &:focus {
+      box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+    
+    // Style for Previous/Next buttons
+    i {
+      margin: 0 4px;
+      font-size: 0.875rem;
+    }
+  }
+  
+  .page-item.active .page-link {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    border-color: #3498db;
+    color: white;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+  }
+  
+  .page-item.disabled .page-link {
+    color: #adb5bd;
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+    cursor: not-allowed;
+    
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+}
+
+// Page size selector styles
+.form-select-sm {
+  min-width: 60px;
+  border-radius: 6px;
+  border: 2px solid #e9ecef;
+  transition: border-color 0.3s ease;
+  font-weight: 500;
+  
+  &:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+  }
+}
+
+// Responsive pagination
+@media (max-width: 768px) {
+  .pagination-container {
+    padding: 15px;
+  }
+  
+  .d-flex.justify-content-center {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .pagination-info {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .pagination {
+    justify-content: center;
+  }
+  
+  .form-select-sm {
+    min-width: 50px;
+  }
+}
+
+// Animation for page transitions
+.pagination .page-link {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Enhanced focus states
+.pagination .page-link:focus-visible {
+  outline: 2px solid #3498db;
+  outline-offset: 2px;
+}
+
+// Chart animations and transitions
+.chart-container {
+  transition: all 0.3s ease;
+  position: relative;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.chart-wrapper {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.02);
+  }
+}
+
+// Chart entrance animations
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+// Apply animations to chart cards
+.card:nth-child(1) {
+  animation: slideInLeft 0.8s ease-out;
+}
+
+.card:nth-child(2) {
+  animation: slideInRight 0.8s ease-out 0.2s both;
+}
+
+// Chart loading animation
+.chart-container::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.chart-container.loading::before {
+  opacity: 1;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
