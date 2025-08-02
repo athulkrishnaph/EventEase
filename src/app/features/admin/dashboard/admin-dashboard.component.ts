@@ -49,6 +49,10 @@ export class AdminDashboardComponent implements OnInit {
     private chartService: ChartService
   ) {}
 
+  /**
+   * Initialize the component on startup
+   * Sets up the current user, loads initial data, and starts polling for updates
+   */
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
     this.loadEvents();
@@ -61,6 +65,10 @@ export class AdminDashboardComponent implements OnInit {
     }, 10000); // 10 seconds
   }
 
+  /**
+   * Clean up resources when component is destroyed
+   * Clears the polling interval to prevent memory leaks
+   */
   ngOnDestroy(): void {
     if (this.pollingInterval) {
       clearInterval(this.pollingInterval);
@@ -127,7 +135,10 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
-  // Utility: Remove participations for deleted events
+  /**
+   * Clean up orphaned participations for deleted events
+   * Removes participations that reference non-existent events to maintain data integrity
+   */
   cleanUpOrphanParticipations(): void {
     this.participations.forEach(participation => {
       if (!this.getEvent(participation.eventId)) {
@@ -156,7 +167,9 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   /**
-   * Render user statistics chart
+   * Render the user statistics donut chart
+   * Creates a donut chart showing the distribution of participation statuses
+   * Only renders if there is meaningful data to display
    */
   renderUserStatsChart(): void {
     const statuses = ['Assigned', 'Pending', 'Registered', 'Attended', 'Completed'];
@@ -176,6 +189,11 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
+  /**
+   * Filter participations by status from chart click
+   * Toggles the status filter - if already filtered by this status, resets to show all
+   * @param status The status to filter by (Assigned, Pending, Registered, Attended, Completed)
+   */
   filterParticipationsByStatus(status: string): void {
     // Toggle filter: if already filtered by this status, reset to all
     if (this.selectedFilter === status) {
@@ -196,7 +214,9 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   /**
-   * Render event participation chart
+   * Render the event participation stacked bar chart
+   * Creates a stacked bar chart showing participation data for each event
+   * Only renders if there are events and participations available
    */
   renderEventParticipationChart(): void {
     // Only render if we have events and participations
@@ -237,6 +257,12 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
+  /**
+   * Filter participations by event title from chart click
+   * Filters the participations table to show only participations for the selected event
+   * @param label The short event title from the chart
+   * @param eventData The event data array containing full titles
+   */
   filterParticipationsByEventTitle(label: string, eventData: any[]): void {
     // Find the event with the matching short title
     const event = eventData.find(e => e.category === label);
@@ -251,8 +277,9 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   /**
-   * Filter participations based on chart selection
-   * @param filter Filter value
+   * Filter participations based on button selection
+   * Handles filtering by status or resetting to show all participations
+   * @param filter The filter value ('all' or a status like 'Registered', 'Attended', etc.)
    */
   filterParticipations(filter: string): void {
     this.selectedFilter = filter;
@@ -280,6 +307,8 @@ export class AdminDashboardComponent implements OnInit {
 
   /**
    * Search participations by event name
+   * Filters the participations table based on the search term entered by the user
+   * Combines search with existing status filters if any are active
    */
   searchParticipations(): void {
     if (!this.searchTerm.trim()) {
@@ -307,9 +336,10 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   /**
-   * Get user by ID
-   * @param userId User ID
-   * @returns User object
+   * Get user by ID from the users array
+   * Handles both string and number ID types for flexibility
+   * @param userId The user ID to search for
+   * @returns The user object if found, undefined otherwise
    */
   getUser(userId: number | string): User | undefined {
     const id = typeof userId === 'string' ? parseInt(userId, 10) : userId;
@@ -317,7 +347,8 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   /**
-   * Logout the current user
+   * Logout the current user and redirect to login page
+   * Clears the user session and navigates to the login page
    */
   logout(): void {
     this.authService.logout();
@@ -326,9 +357,10 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   /**
-   * Get event by ID
-   * @param eventId Event ID
-   * @returns Event or undefined
+   * Get event by ID from the events array
+   * Handles both string and number ID types for flexibility
+   * @param eventId The event ID to search for
+   * @returns The event object if found, undefined otherwise
    */
   getEvent(eventId: number | string): Event | undefined {
     return this.events.find(event => event.id === eventId);
@@ -336,6 +368,8 @@ export class AdminDashboardComponent implements OnInit {
 
   /**
    * Calculate pagination for filtered participations
+   * Updates total items, total pages, and paginated data based on current filters
+   * Ensures current page is within valid range and updates the displayed data
    */
   private calculatePagination(): void {
     this.totalItems = this.filteredParticipations.length;
@@ -355,8 +389,9 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   /**
-   * Go to specific page
-   * @param page Page number
+   * Navigate to a specific page in the pagination
+   * Validates the page number and updates the current page if valid
+   * @param page The page number to navigate to
    */
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
@@ -366,7 +401,8 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   /**
-   * Go to next page
+   * Navigate to the next page in the pagination
+   * Only allows navigation if there is a next page available
    */
   nextPage(): void {
     if (this.currentPage < this.totalPages) {
@@ -376,7 +412,8 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   /**
-   * Go to previous page
+   * Navigate to the previous page in the pagination
+   * Only allows navigation if there is a previous page available
    */
   previousPage(): void {
     if (this.currentPage > 1) {
@@ -387,6 +424,9 @@ export class AdminDashboardComponent implements OnInit {
 
   /**
    * Get array of page numbers for pagination display
+   * Returns a smart range of page numbers around the current page
+   * Shows all pages if total is small, or a window around current page if large
+   * @returns Array of page numbers to display in the pagination controls
    */
   getPageNumbers(): number[] {
     const pages: number[] = [];
@@ -416,8 +456,9 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   /**
-   * Change page size
-   * @param size New page size
+   * Change the number of items displayed per page
+   * Resets to the first page when page size is changed
+   * @param size The new number of items to display per page
    */
   changePageSize(size: number): void {
     this.pageSize = size;
@@ -426,8 +467,9 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   /**
-   * Handle page size change from template
-   * @param changeEvent Change event
+   * Handle page size change from the template dropdown
+   * Extracts the selected value and calls changePageSize with the new size
+   * @param changeEvent The change event from the select element
    */
   onPageSizeChange(changeEvent: any): void {
     const target = changeEvent.target as HTMLSelectElement;
@@ -454,6 +496,11 @@ export class AdminDashboardComponent implements OnInit {
    */
   // Remove showCreateEventModal, newEvent, openCreateEventModal, closeCreateEventModal, createEvent and related modal logic
 
+  /**
+   * Update an existing event
+   * Sends the updated event data to the server and reloads data on success
+   * @param event The event object with updated data
+   */
   editEvent(event: Event): void {
     this.eventService.updateEvent(event.id, event).subscribe({
       next: () => {
@@ -468,6 +515,12 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
+  /**
+   * Delete an event after user confirmation
+   * Shows a confirmation dialog and deletes the event if confirmed
+   * Reloads data after successful deletion
+   * @param eventId The ID of the event to delete
+   */
   deleteEvent(eventId: number | string): void {
     if (confirm('Are you sure you want to delete this event?')) {
       this.eventService.deleteEvent(eventId).subscribe({
