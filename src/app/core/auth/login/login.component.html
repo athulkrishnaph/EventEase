@@ -7,12 +7,11 @@
         </div>
         <div class="card-body">
           <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-            <!-- Error message -->
+
             <div *ngIf="errorMessage" class="alert alert-danger">
               {{ errorMessage }}
             </div>
 
-            <!-- Email field -->
             <div class="mb-3">
               <label for="email" class="form-label">Email</label>
               <input 
@@ -28,7 +27,6 @@
               </div>
             </div>
 
-            <!-- Password field -->
             <div class="mb-3">
               <label for="password" class="form-label">Password</label>
               <input 
@@ -44,7 +42,6 @@
               </div>
             </div>
 
-            <!-- Submit button -->
             <div class="d-grid gap-2">
               <button 
                 type="submit" 
