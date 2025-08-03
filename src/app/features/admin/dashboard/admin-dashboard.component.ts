@@ -30,13 +30,10 @@ export class AdminDashboardComponent implements OnInit {
   
   // Pagination properties
   currentPage: number = 1;
-  pageSize: number = 5; // Changed from 10 to 5 to show pagination
+  pageSize: number = 5;
   totalItems: number = 0;
   totalPages: number = 0;
   paginatedParticipations: EventParticipation[] = [];
-
-  // Add these properties for the create event modal
-  // Remove showCreateEventModal, newEvent, openCreateEventModal, closeCreateEventModal, createEvent and related modal logic
 
   private pollingInterval: any;
   eventTitleFilter: string | null = null;
@@ -151,7 +148,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   /**
-   * Load all users (now using AuthService as single source)
+   * Load all users for display in participations table
    */
   loadUsers(): void {
     this.authService.getUsers().subscribe({
@@ -481,20 +478,7 @@ export class AdminDashboardComponent implements OnInit {
   // Make Math available in template
   Math = Math;
 
-  /**
-   * Open create event modal
-   */
-  // Remove showCreateEventModal, newEvent, openCreateEventModal, closeCreateEventModal, createEvent and related modal logic
 
-  /**
-   * Close create event modal
-   */
-  // Remove showCreateEventModal, newEvent, openCreateEventModal, closeCreateEventModal, createEvent and related modal logic
-  
-  /**
-   * Create a new event
-   */
-  // Remove showCreateEventModal, newEvent, openCreateEventModal, closeCreateEventModal, createEvent and related modal logic
 
   /**
    * Update an existing event

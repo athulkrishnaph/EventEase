@@ -42,10 +42,7 @@ export const routes: Routes = [
         path: 'events/edit/:id',
         loadComponent: () => import('./features/admin/event-form/event-form.component').then(m => m.EventFormComponent)
       },
-      {
-        path: 'users',
-        loadComponent: () => import('./features/admin/users/admin-users.component').then(m => m.AdminUsersComponent)
-      }
+
     ]
   },
   { path: '**', redirectTo: '/login' }
