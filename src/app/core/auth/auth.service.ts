@@ -66,14 +66,6 @@ export class AuthService {
     return this.http.get<User>(`${this.apiUrl}/users/${id}`);
   }
 
-  /**
-   * Create new user
-   * @param user User data
-   * @returns Observable with created user
-   */
-  createUser(user: Omit<User, 'id'>): Observable<User> {
-    return this.http.post<User>(`${this.apiUrl}/users`, user);
-  }
 
   /**
    * Update user
