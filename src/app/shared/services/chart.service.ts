@@ -11,7 +11,7 @@ export class ChartService {
    * Create a donut chart using D3.js
    * @param element The HTML element to render the chart in
    * @param data The data for the chart
-   * @param colorScale Optional color scale
+   * @param colorScale 
    */
   createDonutChart(
     element: ElementRef,
@@ -231,15 +231,6 @@ export class ChartService {
     // Add y-axis
     g.append('g').call(d3.axisLeft(y));
 
-    // Add title
-    // Remove the title that says "Bar Chart"
-    // svg
-    //   .append('text')
-    //   .attr('x', width / 2)
-    //   .attr('y', margin.top / 2)
-    //   .attr('text-anchor', 'middle')
-    //   .style('font-size', '16px')
-    //   .text('Bar Chart');
   }
 
   /**
